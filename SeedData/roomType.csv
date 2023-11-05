@@ -1,0 +1,8 @@
+Id,Type,Occupancy,Price
+1,single,1,50
+2,double,2,75
+3,DulexSingle,1,75
+4,DulexTwin,2,100
+5,Family,3,100
+6,FamilyDulex,3,130
+7,FamilyApartment,4,200
