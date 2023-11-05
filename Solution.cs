@@ -48,7 +48,7 @@ class Solution {
         // Exercise 4. List the rooms that are free on '2022-01-13'.
         var allRoomNumbers = db.rooms.Select(_ => _.Number);
         var occupiedRoomNumbers = db.bookings.Where(_ => _.BookingDate == date).Select(_ => _.RoomNumber);
-        var result = allRoomNumbers.Except(occupiedRoomNumbers);
+        var result = allRoomNumbers.Except(occupiedRoomNumbers).OrderBy(_ => _);
         foreach(var r in result)
         {
             System.Console.WriteLine(r);
