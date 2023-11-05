@@ -60,16 +60,13 @@ class Solution {
         // Exercise: 5:  List down top 5 valued customers, with their id and spending 
         // HINT: a valued customer is the on with max amount spent, 
         // amount = Nights * Price for each booking of a customer
-        var guests = from b in db.bookings
+        var guests = (from b in db.bookings
                      join r in db.rooms on b.RoomNumber equals r.Number
                      join rt in db.roomType on r.RoomTypeId equals rt.Id
                      group b by b.GuestID into grp
-                     select new { Id = grp.Key, Value = grp.Sum(_ => _.room.roomType.Price * _.Nights) };
+                     select new { Id = grp.Key, Value = grp.Sum(_ => _.Nights * _.room.roomType.Price), Values = grp.ToList() }).ToList();
         var result = guests.OrderByDescending(_ => _.Value).Take(5).ToList();
-        foreach(var r in result)
-        {
-            System.Console.WriteLine($"{r.Id}, {r.Value}");
-        }
+        result.ForEach(_ => System.Console.WriteLine($"{_.Id}, {_.Value}"));
     }
 
     public static void q6Solution(HotelContext db, DateOnly date)
@@ -91,7 +88,7 @@ class Solution {
         System.Console.WriteLine("Summary:");
         foreach(var r in result)
         {
-            System.Console.WriteLine($"RoomType: {r.RoomType}, Total: {r.Total}, Booked: {r.RoomNumbers.Intersect(booked).Count()}, Free {r.RoomNumbers.Except(booked).Count()}");
+            System.Console.WriteLine($"RoomType: {r.RoomType}, Total: {r.Total}, Booked: {r.RoomNumbers.Intersect(booked).Count()}, Free: {r.RoomNumbers.Except(booked).Count()}");
             // System.Console.WriteLine(r.RoomType);
         }
     }
