@@ -21,10 +21,11 @@ class Solution {
         var results = from b in db.bookings
                       join g in db.guests on b.GuestID equals g.Id
                       where b.BookingDate == date
-                      select new { g.Name, b.RoomNumber };
+                      orderby g.Id
+                      select new { g.Id, g.Name, b.RoomNumber };
         foreach(var r in results)
         {
-            System.Console.WriteLine($"{r.Name}, {r.RoomNumber}");
+            System.Console.WriteLine($"{r.Id}, {r.Name}, {r.RoomNumber}");
         }
     }
 
@@ -44,16 +45,31 @@ class Solution {
 
     public static void q4Solution(HotelContext db, DateOnly date)
     {
-     // Exercise 4. List the rooms that are free on '2022-01-13'.
-
+        // Exercise 4. List the rooms that are free on '2022-01-13'.
+        var allRoomNumbers = db.rooms.Select(_ => _.Number);
+        var occupiedRoomNumbers = db.bookings.Where(_ => _.BookingDate == date).Select(_ => _.RoomNumber);
+        var result = allRoomNumbers.Except(occupiedRoomNumbers);
+        foreach(var r in result)
+        {
+            System.Console.WriteLine(r);
+        }
     }
 
     public static void q5Solution(HotelContext db) 
     {
-     // Exercise: 5:  List down top 5 valued customers, with their id and spending 
-     // HINT: a valued customer is the on with max amount spent, 
-     // amount = Nights * Price for each booking of a customer
-  
+        // Exercise: 5:  List down top 5 valued customers, with their id and spending 
+        // HINT: a valued customer is the on with max amount spent, 
+        // amount = Nights * Price for each booking of a customer
+        var guests = from b in db.bookings
+                     join r in db.rooms on b.RoomNumber equals r.Number
+                     join rt in db.roomType on r.RoomTypeId equals rt.Id
+                     group b by b.GuestID into grp
+                     select new { Id = grp.Key, Value = grp.Sum(_ => _.room.roomType.Price * _.Nights) };
+        var result = guests.OrderByDescending(_ => _.Value).Take(5);
+        foreach(var r in result)
+        {
+            System.Console.WriteLine($"{r.Id}, {r.Value}");
+        }
     }
 
     public static void q6Solution(HotelContext db, DateOnly date)
