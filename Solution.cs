@@ -66,7 +66,7 @@ class Solution {
                      group b by b.GuestID into grp
                      orderby grp.Key
                      select new { Id = grp.Key, Value = grp.Sum(_ => _.room.roomType.Price * _.Nights) };
-        var result = guests.OrderByDescending(_ => _.Value).Take(5);
+        var result = guests.OrderByDescending(_ => _.Value).Take(5).ToList();
         foreach(var r in result)
         {
             System.Console.WriteLine($"{r.Id}, {r.Value}");
