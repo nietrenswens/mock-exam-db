@@ -64,7 +64,6 @@ class Solution {
                      join r in db.rooms on b.RoomNumber equals r.Number
                      join rt in db.roomType on r.RoomTypeId equals rt.Id
                      group b by b.GuestID into grp
-                     orderby grp.Key
                      select new { Id = grp.Key, Value = grp.Sum(_ => _.room.roomType.Price * _.Nights) };
         var result = guests.OrderByDescending(_ => _.Value).Take(5).ToList();
         foreach(var r in result)
@@ -75,8 +74,26 @@ class Solution {
 
     public static void q6Solution(HotelContext db, DateOnly date)
     {
-     // Exercise 6: 
+        // Exercise 6: 
+        var result = (from rt in db.roomType
+                        join room in db.rooms on rt.Id equals room.RoomTypeId into room
+                        from r in room.DefaultIfEmpty()
+                        group r by rt.Type into grp
+                        select new
+                        {
+                            RoomType = grp.Key,
+                            RoomNumbers = grp.Select(_ => _ == null ? 0 : _.Number).Where(_ => _ != 0).ToList(),
+                            Total = grp.Select(_ => _ == null ? 0 : _.Number).Where(_ => _ != 0).Count(),
+                        }).OrderByDescending(_ => _.Total);
 
+        var booked = db.bookings.Where(_ => _.BookingDate == date).Select(_ => _.RoomNumber).ToList();
+
+        System.Console.WriteLine("Summary:");
+        foreach(var r in result)
+        {
+            System.Console.WriteLine($"RoomType: {r.RoomType}, Total: {r.Total}, Booked: {r.RoomNumbers.Intersect(booked).Count()}, Free {r.RoomNumbers.Except(booked).Count()}");
+            // System.Console.WriteLine(r.RoomType);
+        }
     }
    
     //     ****  Ex7 in Model.cs  **** 
