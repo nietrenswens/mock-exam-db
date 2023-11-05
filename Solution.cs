@@ -3,22 +3,43 @@ class Solution {
     
     public static void q1Solution(HotelContext db)
     {
-     // Exercise 1: Give the booking detail of given guest booking details (for GuestID 10).  
-     // The result should include booking date, room number, and number of nights. 	
-
+        // Exercise 1: Give the booking detail of given guest booking details (for GuestID 10).  
+        // The result should include booking date, room number, and number of nights. 	
+        var result = from b in db.bookings
+                     where b.GuestID == 10
+                     select new { b.BookingDate, b.RoomNumber, b.Nights };
+        foreach(var r in result)
+        {
+            System.Console.WriteLine($"{r.BookingDate}, {r.RoomNumber}, {r.Nights}");
+        }
     }
 
     public static void q2Solution(HotelContext db, DateOnly date)
     {
-     // Exercise: 2:  List down all the guest names, and room number, 
-     // having booking on specific date (2022 - 01 - 31) 	
-
+        // Exercise: 2:  List down all the guest names, and room number, 
+        // having booking on specific date (2022 - 01 - 31) 	
+        var results = from b in db.bookings
+                      join g in db.guests on b.GuestID equals g.Id
+                      where b.BookingDate == date
+                      select new { g.Name, b.RoomNumber };
+        foreach(var r in results)
+        {
+            System.Console.WriteLine($"{r.Name}, {r.RoomNumber}");
+        }
     }
 
     public static void q3Solution(HotelContext db)
     {
-     // Exercise 3: List down number of bookings per day where there are more than 1 bookings
-   
+        // Exercise 3: List down number of bookings per day where there are more than 1 bookings
+        var bookings = from b in db.bookings
+                       group b by b.BookingDate into grp
+                       orderby grp.Key
+                       select new { Date = grp.Key, Count = grp.ToList().Count() };
+        var result = bookings.Where(_ => _.Count > 1);
+        foreach(var booking in result)
+        {
+            System.Console.WriteLine($"{booking.Date}, {booking.Count}");
+        }
     }
 
     public static void q4Solution(HotelContext db, DateOnly date)

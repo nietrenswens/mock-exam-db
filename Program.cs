@@ -3,7 +3,7 @@ class Program {
 
     public static void Main(string[] args)
     {
-        BulkDataSeeding();    
+        // BulkDataSeeding();    
      
         using (var context = new HotelContext())
         {         

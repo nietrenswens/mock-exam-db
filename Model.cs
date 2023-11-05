@@ -1,4 +1,6 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 class HotelContext : DbContext {
 
     public DbSet<RoomType> roomType { get; set; } = null!;
